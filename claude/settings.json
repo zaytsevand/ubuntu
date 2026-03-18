@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//home/azaitsev/**)",
+      "Read(//mnt/c/Users/a.zaitsev/**)",
+      "Read(//tmp/**)",
+      "Bash(*)",
+      "WebFetch(domain:test-sso.bocbs.cardpay-test.com)",
+      "WebFetch(domain:sso.aml-test.staging.cardpay-aws.net)",
+      "mcp__atlassian__*",
+      "mcp__gitlab__*",
+      "WebSearch",
+      "WebFetch(domain:www.lickslegal.com)",
+      "WebFetch(domain:starkinfra.com)",
+      "WebFetch(domain:www.bcb.gov.br)",
+      "WebFetch(domain:ubc-dev.unlimint.com)",
+      "WebFetch(domain:jira.unl24.com)"
+    ],
+    "additionalDirectories": [
+      "/home/azaitsev",
+      "/home/azaitsev/.claude/skills",
+      "/tmp"
+    ]
+  },
+  "effortLevel": "medium"
+}
