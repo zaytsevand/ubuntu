@@ -31,9 +31,6 @@ Machine: SRBM016 (WSL2, Ubuntu)
 ### config/glab-cli/
 - `config.yml` — glab CLI config for gitlab.cardpay-test.com (token placeholder)
 
-### architecture/
-- Banking platform service index, dependency diagram, description template, AI docs manual
-
 ### gpg/
 - `unlimit_gpg_public.asc` — GPG public key
 
