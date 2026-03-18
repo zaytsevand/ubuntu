@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//$HOME/**)",
+      "Read(//tmp/**)",
+      "Bash(*)",
+      "mcp__atlassian__*",
+      "mcp__gitlab__*",
+      "WebSearch"
+    ],
+    "additionalDirectories": [
+      "/tmp"
+    ]
+  },
+  "effortLevel": "medium"
+}

@@ -1,0 +1,2 @@
+autoswitch_virtualenv
+zsh-syntax-highlighting
