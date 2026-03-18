@@ -1,16 +1,14 @@
-# Andrei Zaitsev — WSL Dev Environment Setup
-
-Machine: SRBM016 (WSL2, Ubuntu)
+# WSL Dev Environment Setup
 
 ## What's Inside
 
 ### shell/
-- `.zshrc` — Oh My Zsh with robbyrussell theme, custom prompt (hostname icon, truncated git branch, venv indicator), plugins: git, fzf, pip, sudo, zsh-interactive-cd, docker, docker-compose, z, zsh-syntax-highlighting, jenv, direnv, nvm
+- `.zshrc` — Oh My Zsh with robbyrussell theme, custom prompt (truncated git branch, venv indicator), plugins: git, fzf, pip, sudo, zsh-interactive-cd, docker, docker-compose, z, zsh-syntax-highlighting, jenv, direnv, nvm
 - `.zprofile` — pipx PATH
 - `.bashrc` / `.profile` — defaults with standard aliases
 
 ### git/
-- `.gitconfig` — user: Andrei Zaitsev <a.zaitsev@unlimit.com>, push.autoSetupRemote=true
+- `.gitconfig` — push.autoSetupRemote=true (fill in your name/email)
 
 ### java/
 - `.docker-java.properties` — API version 1.44
@@ -22,17 +20,13 @@ Machine: SRBM016 (WSL2, Ubuntu)
 - `gradle.21.properties` — JAVA_HOME → ms-21.0.9
 
 ### claude/
-- `CLAUDE.md` — global Claude Code rules (GitLab host, git workflow, banking architecture conventions, MR review approach)
-- `settings.json` — permissions, allowed domains, MCP tools
-- `skills/` — 13 custom skills (create-mr, git-commit, review, jira, daily reports, sprint review, etc.)
+- `CLAUDE.md` — global Claude Code rules (GitLab workflow, MR review approach)
+- `settings.json` — permissions and MCP tools
+- `skills/` — custom skills (create-mr, git-commit, review, jira, daily standup, sprint review, etc.)
 - `memory/` — persistent memory files
-- `projects/project-list.txt` — list of per-project Claude configs
 
 ### config/glab-cli/
-- `config.yml` — glab CLI config for gitlab.cardpay-test.com (token placeholder)
-
-### gpg/
-- `unlimit_gpg_public.asc` — GPG public key
+- `config.yml` — glab CLI config (add your GitLab host and token)
 
 ### oh-my-zsh-custom-plugins/
 - `plugins.txt` — list of custom plugins to `git clone` into `~/.oh-my-zsh/custom/plugins/`:
@@ -41,22 +35,19 @@ Machine: SRBM016 (WSL2, Ubuntu)
 
 ## Restore Steps
 
-1. Copy `shell/*` to `~/`
-2. Copy `git/.gitconfig` to `~/`
+1. Run `zsh.sh` to install zsh, oh-my-zsh, plugins, and deploy `.zshrc`
+2. Copy `git/.gitconfig` to `~/` and fill in your name/email
 3. Copy `java/*` to `~/`
 4. Copy `gradle/*` to `~/.gradle/`
 5. Copy `claude/CLAUDE.md` and `claude/settings.json` to `~/.claude/`
 6. Copy `claude/skills/*` to `~/.claude/skills/`
-7. Copy `config/glab-cli/*` to `~/.config/glab-cli/`
-8. Install oh-my-zsh, then clone custom plugins from `plugins.txt`
-9. Install: jenv, nvm (lts/*), direnv, pipx (poetry, virtualenv), fzf
-10. Set up JDKs in `~/.jdks/` (ms-21.0.9, semeru-16.0.2)
-11. Replace `<YOUR_GITLAB_TOKEN>` in `.zshrc` and `glab-cli/config.yml`
-12. Import GPG key: `gpg --import gpg/unlimit_gpg_public.asc`
+7. Copy `config/glab-cli/*` to `~/.config/glab-cli/` and add your GitLab host/token
+8. Set up JDKs in `~/.jdks/` (ms-21.0.9, semeru-16.0.2)
+9. Update placeholders: `<YOUR_GITLAB_HOST>`, `<YOUR_JIRA_URL>`, `<YOUR_NAME>`, `<YOUR_EMAIL>`
 
 ## NOT included (secrets / ephemeral)
 - `~/.ssh/` — regenerate keys on new machine
-- `~/.gnupg/` private keys — export separately
+- `~/.gnupg/` — export/import separately
 - `~/.zsh_history` / `.bash_history`
 - `~/.gradle/caches/`, `~/.m2/repository/` — rebuilt automatically
-- GitLab tokens — replaced with placeholders
+- Tokens — replaced with placeholders

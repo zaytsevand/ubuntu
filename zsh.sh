@@ -1,22 +1,51 @@
 #!/bin/bash
+set -euo pipefail
 
-# updating installation
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+echo "==> Updating system packages"
 sudo apt-get update && sudo apt-get upgrade -y
 
-# adding zsh
-sudo apt install zsh git curl fzf -y
+echo "==> Installing zsh, git, curl, fzf, direnv"
+sudo apt-get install -y zsh git curl fzf direnv
 
-# adding oh-my-zsh
-RUNZSH=no & sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+echo "==> Installing Oh My Zsh"
+RUNZSH=no KEEP_ZSHRC=yes sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" || true
 
-# addning zsh-syntax-highlighting
-git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
+echo "==> Installing custom plugins"
+ZSH_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
 
-# making a backup for zsh config
-cp ~/.zshrc ~/.zshrc.bak
+if [ ! -d "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting" ]; then
+  git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting"
+fi
 
-# cloning .zshrc from gist
-curl https://gist.githubusercontent.com/zaytsevand/cc3d87b3d3dfbbbad343fd0b11ab5ad4/raw/010ae9b86529ee28c82e749e1e74ba3689cd24a3/.zshrc > ~/.zshrc
+if [ ! -d "$ZSH_CUSTOM/plugins/autoswitch_virtualenv" ]; then
+  git clone https://github.com/MichaelAqworWorker/zsh-autoswitch-virtualenv.git "$ZSH_CUSTOM/plugins/autoswitch_virtualenv"
+fi
 
-# starting zsh in current shell
-sh -c "zsh"
+echo "==> Installing jenv"
+if [ ! -d "$HOME/.jenv" ]; then
+  git clone https://github.com/jenv/jenv.git "$HOME/.jenv"
+fi
+
+echo "==> Installing nvm"
+if [ ! -d "$HOME/.nvm" ]; then
+  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+fi
+
+echo "==> Installing pipx, poetry, virtualenv"
+sudo apt-get install -y python3-pip python3-venv
+python3 -m pip install --user pipx 2>/dev/null || sudo apt-get install -y pipx
+pipx install poetry 2>/dev/null || true
+pipx install virtualenv 2>/dev/null || true
+
+echo "==> Backing up existing .zshrc"
+[ -f "$HOME/.zshrc" ] && cp "$HOME/.zshrc" "$HOME/.zshrc.bak"
+
+echo "==> Deploying .zshrc from repo"
+cp "$SCRIPT_DIR/shell/.zshrc" "$HOME/.zshrc"
+
+echo "==> Setting zsh as default shell"
+chsh -s "$(which zsh)" || echo "Could not change shell — run: chsh -s \$(which zsh)"
+
+echo "==> Done. Start a new shell or run: exec zsh"

@@ -135,7 +135,8 @@ git_prompt_truncated() {
 }
 
 local _host="%M"
-[[ "$(hostname)" == "SRBM016" ]] && _host="🏠"
+# Set your hostname below for a custom prompt icon
+# [[ "$(hostname)" == "MY-HOST" ]] && _host="🏠"
 prompt_str="%* %{$fg[white]%}${_host} \${ret_status} %{$fg[cyan]%}%c%{$reset_color%}"
 prompt_str+=' $(git_prompt_truncated)'
 prompt_str+='$(venv_prompt_info)'
@@ -144,12 +145,12 @@ export PROMPT="$prompt_str$ "
 
 export DIRENV_LOG_FORMAT=
 
-export JAVA_HOME="/home/azaitsev/.jdks/ms-21.0.9"
+export JAVA_HOME="$HOME/.jdks/ms-21.0.9"
 export PATH="$JAVA_HOME/bin:$PATH"
 
 
 # Created by `pipx` on 2026-02-27 10:49:34
-export PATH="$PATH:/home/azaitsev/.local/bin"
+export PATH="$PATH:$HOME/.local/bin"
 
 
 
@@ -157,4 +158,4 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
-export GITLAB_TOKEN="<YOUR_GITLAB_TOKEN>"
+# export GITLAB_TOKEN="<YOUR_GITLAB_TOKEN>"

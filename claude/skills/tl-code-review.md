@@ -13,7 +13,7 @@ allowed-tools:
 
 You are a team lead performing a structured code review on a GitLab Merge Request.
 
-Always set `GITLAB_HOST=gitlab.cardpay-test.com` for all glab commands.
+Always set `GITLAB_HOST=<YOUR_GITLAB_HOST>` for all glab commands.
 
 ## Input
 
@@ -24,17 +24,15 @@ User provides one of:
 
 ## Phase 0: Architecture Context
 
-1. Check MEMORY for "Banking Platform Service Index"
-2. Read `.ai/service-description.md` for service context
-3. Check `~/code/architecture/banking/service-dependencies.md` for upstream/downstream impact
+1. Read `.ai/service-description.md` for service context
 
 ## Phase 1: Gather Context (parallel)
 
 ```bash
-GITLAB_HOST=gitlab.cardpay-test.com glab mr view <MR_IID> --comments
-GITLAB_HOST=gitlab.cardpay-test.com glab mr diff <MR_IID>
-GITLAB_HOST=gitlab.cardpay-test.com glab api 'projects/:id/merge_requests/<MR_IID>/discussions' | jq '[.[] | {id, notes: [.notes[] | {id, body: .body[:200], resolved, resolvable, author: .author.username}]}]'
-GITLAB_HOST=gitlab.cardpay-test.com glab api 'projects/:id/pipelines?ref=<branch>&per_page=1' | jq '.[0] | {id, status, ref, web_url}'
+GITLAB_HOST=<YOUR_GITLAB_HOST> glab mr view <MR_IID> --comments
+GITLAB_HOST=<YOUR_GITLAB_HOST> glab mr diff <MR_IID>
+GITLAB_HOST=<YOUR_GITLAB_HOST> glab api 'projects/:id/merge_requests/<MR_IID>/discussions' | jq '[.[] | {id, notes: [.notes[] | {id, body: .body[:200], resolved, resolvable, author: .author.username}]}]'
+GITLAB_HOST=<YOUR_GITLAB_HOST> glab api 'projects/:id/pipelines?ref=<branch>&per_page=1' | jq '.[0] | {id, status, ref, web_url}'
 ```
 
 If a Jira key is in the MR title/branch, fetch the issue.
@@ -58,8 +56,8 @@ If a Jira key is in the MR title/branch, fetch the issue.
 ## Phase 2.5: Pipeline Deep Dive (if failed)
 
 ```bash
-GITLAB_HOST=gitlab.cardpay-test.com glab api 'projects/:id/pipelines/<pipeline-id>/jobs?per_page=100' | jq '[.[] | {id, name, stage, status}]'
-GITLAB_HOST=gitlab.cardpay-test.com glab api 'projects/:id/jobs/<job-id>/trace' 2>&1 | tail -100
+GITLAB_HOST=<YOUR_GITLAB_HOST> glab api 'projects/:id/pipelines/<pipeline-id>/jobs?per_page=100' | jq '[.[] | {id, name, stage, status}]'
+GITLAB_HOST=<YOUR_GITLAB_HOST> glab api 'projects/:id/jobs/<job-id>/trace' 2>&1 | tail -100
 ```
 
 Read actual source code before diagnosing test failures.
@@ -97,17 +95,17 @@ Summary: <one-line>
 
 **Reply to thread:**
 ```bash
-GITLAB_HOST=gitlab.cardpay-test.com glab api --method POST 'projects/:id/merge_requests/<MR_IID>/discussions/<discussion-id>/notes' -f 'body=<reply>'
+GITLAB_HOST=<YOUR_GITLAB_HOST> glab api --method POST 'projects/:id/merge_requests/<MR_IID>/discussions/<discussion-id>/notes' -f 'body=<reply>'
 ```
 
 **Resolve thread:**
 ```bash
-GITLAB_HOST=gitlab.cardpay-test.com glab api --method PUT 'projects/:id/merge_requests/<MR_IID>/discussions/<discussion-id>' -f 'resolved=true'
+GITLAB_HOST=<YOUR_GITLAB_HOST> glab api --method PUT 'projects/:id/merge_requests/<MR_IID>/discussions/<discussion-id>' -f 'resolved=true'
 ```
 
-**Approve:** `GITLAB_HOST=gitlab.cardpay-test.com glab mr approve <MR_IID>`
+**Approve:** `GITLAB_HOST=<YOUR_GITLAB_HOST> glab mr approve <MR_IID>`
 
-**Retry failed job:** `GITLAB_HOST=gitlab.cardpay-test.com glab ci retry <job-id>`
+**Retry failed job:** `GITLAB_HOST=<YOUR_GITLAB_HOST> glab ci retry <job-id>`
 
 ## Rules
 

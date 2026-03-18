@@ -23,7 +23,7 @@ breaking changes.
 - **NEVER include AI attribution** in the MR description
 - **ALWAYS ask the user to confirm** the generated title and description before creating the MR
 - Target branch defaults to `dev` unless the user specifies otherwise
-- Always set `GITLAB_HOST=gitlab.cardpay-test.com` when running glab commands
+- Always set `GITLAB_HOST=<YOUR_GITLAB_HOST>` when running glab commands
 
 ## Workflow
 
@@ -65,7 +65,7 @@ Analyze the diffs and commit log. Structure the MR description using this templa
 
 ## Jira
 
-[PROJ-123](https://jira.cardpay.com/browse/PROJ-123) *(omit section if no ticket found)*
+[PROJ-123](<YOUR_JIRA_URL>/browse/PROJ-123) *(omit section if no ticket found)*
 
 ## What Changed
 
@@ -128,7 +128,7 @@ cat > /tmp/mr_desc.txt << 'MRDESC'
 <description content>
 MRDESC
 
-GITLAB_HOST=gitlab.cardpay-test.com glab mr create \
+GITLAB_HOST=<YOUR_GITLAB_HOST> glab mr create \
   --title "<title>" \
   --description "$(cat /tmp/mr_desc.txt)" \
   --target-branch dev

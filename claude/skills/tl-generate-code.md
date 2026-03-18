@@ -15,8 +15,7 @@ You are a team lead generating production-ready code scaffolding from a Jira tas
 
 ## Phase 2: Codebase Exploration (parallel)
 
-1. Check MEMORY for "Banking Platform Service Index"
-2. Read `.ai/service-description.md` for service context
+1. Read `.ai/service-description.md` for service context
 3. Find similar implementations via Grep (service classes, handlers, controllers)
 4. Check `build.gradle.kts` or `pom.xml` for available libraries
 5. Check `application.yml` for config patterns

@@ -1,8 +1,0 @@
--home-azaitsev
--home-azaitsev-code-architecture-banking
--home-azaitsev-code-b2bcards
--home-azaitsev-code-baas-api-gateway
--home-azaitsev-code-baas-webhook-service
--home-azaitsev-code-banking
--home-azaitsev-code-banking-payments-api
--home-azaitsev-code-banking-temenos-swift-connector

@@ -23,5 +23,6 @@ hosts:
         api_host: gitlab.com
         # Your GitLab access token. To get one, read https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html
         token:
-    gitlab.cardpay-test.com:
-        token: <YOUR_GITLAB_TOKEN>
+    # Add your GitLab instance below:
+    # your.gitlab.host:
+    #     token: <YOUR_TOKEN>
