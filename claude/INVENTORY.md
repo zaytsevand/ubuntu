@@ -24,11 +24,23 @@ Marketplaces: context-mode, memsearch-plugins, ast-index-marketplace, vladikk-mo
 
 ## User skills (`~/.claude/skills`)
 
-archify, chorus-core, chorus-learn, chorus-review (56 uses), chorus-sdlc (38), coryphaeus, gh-stack, goal-loop (36 as `/goal`),
-graphify, open-vscode (26), prj-win-cleanup, problem-brief, spec-walkthrough (30), plus a `synced/` folder.
+Global skills only. Project-bound skills (the `prj-*` set, speckit-*) live in their repos and are not listed.
 
-Most-used skills that come from projects/plugins: speckit-implement (141), speckit-specify (112), speckit-plan (107),
-speckit-tasks (85), speckit-clarify (80), speckit-analyze (77), deep-research (16), prj-build-exe-windows (13).
+| Skill | Uses | Source | How it got here |
+|---|---|---|---|
+| archify | | github `tt-a1i/archify` | `npx skills` install into `~/.agents/skills`, symlinked; pinned in `~/.agents/.skill-lock.json` |
+| chorus-core, chorus-learn, chorus-review, chorus-sdlc | 56 / 38 (review / sdlc) | github `zaytsevand/chorus` | vendored copy, synced 2026-09-28 at `2aaf8eb` |
+| coryphaeus | | local `~/code/zaytsevand/coryphaeus` | own repo, no remote yet; copied by hand |
+| problem-brief | | github `zaytsevand/problem-brief` | own repo, copied into skills |
+| gh-stack | | github `github/gh-stack` | skill shipped with the `gh stack` CLI extension (v0.1.1) |
+| graphify | | PyPI `graphifyy` 0.8.36 | `uv tool install graphifyy`, then its own installer wrote the skill |
+| goal-loop | 36 (`/goal`) | none recorded | hand-written, local only |
+| spec-walkthrough | 30 | none recorded | hand-written, local only |
+| open-vscode | 26 | none recorded | hand-written, local only |
+
+The two `synced/` folders in that directory are account-synced skills, not local installs.
+
+Heavy slash-command use from plugins: speckit-* (implement 141, specify 112, plan 107, tasks 85, clarify 80, analyze 77), deep-research (16).
 
 ## Subagents (`~/.claude/agents`)
 
