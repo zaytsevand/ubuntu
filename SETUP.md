@@ -13,6 +13,7 @@
 ### claude/
 - `CLAUDE.md` — global Claude Code rules (GitLab workflow, MR review approach)
 - `settings.json` — permissions and MCP tools
+- `skills/` — vendored copies of chorus-*, coryphaeus, problem-brief; `VENDORED.md` has the pinned commits, `sync-skills.sh` refreshes them
 - `INVENTORY.md` — installed plugins, skills, subagents, mods and MCP servers (with usage counts)
 
 ### config/glab-cli/
@@ -27,7 +28,7 @@
 
 1. Run `zsh.sh` to install zsh, oh-my-zsh, plugins, and deploy `.zshrc`
 2. Copy `git/.gitconfig` to `~/` and fill in your name/email
-3. Copy `claude/CLAUDE.md` and `claude/settings.json` to `~/.claude/`
+3. Copy `claude/CLAUDE.md` and `claude/settings.json` to `~/.claude/`, and `claude/skills/*` to `~/.claude/skills/`
 4. Copy `config/glab-cli/*` to `~/.config/glab-cli/` and add your GitLab host/token
 5. Update placeholders: `<YOUR_GITLAB_HOST>`, `<YOUR_JIRA_URL>`, `<YOUR_NAME>`, `<YOUR_EMAIL>`
 

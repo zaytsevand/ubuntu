@@ -1,0 +1,879 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local/problem-brief.schema.json",
+  "title": "Problem brief",
+  "description": "Data for one problem brief page. The renderer fixes the layout; this file holds only the content.",
+  "type": "object",
+  "required": [
+    "title",
+    "subject",
+    "created",
+    "updated",
+    "decisions"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "title": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 80,
+      "description": "Short name for the page, two to five words. Becomes the artefact title."
+    },
+    "subject": {
+      "type": "string",
+      "minLength": 10,
+      "description": "One plain sentence naming what this brief is about and who must act on it."
+    },
+    "url": {
+      "type": "string",
+      "description": "Where the brief is published, once it has been. Lets a later session find the page, and recover this file from it, without asking."
+    },
+    "binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ref"
+      ],
+      "description": "The item in the project's own tracking tool this brief works under: a task, a ticket, a specification, an architecture decision record. Set it when the work is already bound to one (the branch name, the spec being implemented, the task the operator named); never invent one. Every entry and ruling id is then shown and cited with it as a prefix, e.g. JOB-42/Q-3, so ids stay unambiguous across briefs and can be cited in the tracker, commits and records. The ids in this file stay bare (Q-3); only their display changes.",
+      "properties": {
+        "ref": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._#-]{0,40}$",
+          "description": "The external identifier as the project writes it, e.g. JOB-42, spec-017, ADR-0009, problem-brief#13. No slashes."
+        },
+        "system": {
+          "type": "string",
+          "description": "What kind of thing it is, in plain words: 'Jira task', 'GitHub issue', 'speckit spec', 'ADR'."
+        },
+        "title": {
+          "type": "string",
+          "description": "The item's own title, so the reader knows what it is without opening it."
+        },
+        "url": {
+          "type": "string",
+          "description": "A link to the item, where there is one."
+        }
+      }
+    },
+    "goal": {
+      "type": "string",
+      "minLength": 10,
+      "description": "What the current work is driving towards, in the operator's own words. Every open or ruled entry is judged against it: does it block the goal, or is it a real decision that can wait? Required once any entry blocks the goal."
+    },
+    "created": {
+      "$ref": "#/$defs/timestamp",
+      "description": "When this brief was first written. Set once and never changed."
+    },
+    "updated": {
+      "$ref": "#/$defs/timestamp",
+      "description": "When anything on this brief last changed. Never earlier than the updated stamp of any item on it."
+    },
+    "retired": {
+      "$ref": "#/$defs/timestamp",
+      "description": "When the brief was retired: its work finished or abandoned, or it was only ever a test. A retired brief is taken out of Claude's memory and the hooks (bin/brief-retire.mjs does it and sets this stamp), is not registered again, and is kept for the record. Remove the stamp to bring it back."
+    },
+    "throwaway": {
+      "type": "boolean",
+      "default": false,
+      "description": "true for a brief made only to try something out: a test of the skill or its hooks, a layout experiment, a one-off demonstration. The page says so, and every session start lists it — by name and published page — until it is retired. Once the test is over it is cleaned up in full: retired, and its page deleted when the operator agrees."
+    },
+    "generated": {
+      "type": "string",
+      "format": "date",
+      "description": "Retired. Re-checking the facts and every item's state is a change to the brief: move the brief's `updated` stamp instead. Still accepted so older briefs load, with a warning."
+    },
+    "source": {
+      "type": "string",
+      "description": "What produced these findings, in plain English, e.g. 'the implementation review on the importer branch, 11 September'. Shown folded away with the background, never on the stamp line."
+    },
+    "context": {
+      "type": "string",
+      "description": "Free text the reader needs before entry one, when changes and background do not fit it. Optional. Write two or more things as a dash list, never as one run-on paragraph."
+    },
+    "changes": {
+      "type": "array",
+      "description": "What moved since the last version, one item per change. Give each its kind, so the page can group them under one heading — new first, then changes, then closings — and mark each with its icon. Entry ids become links carrying the entry's short label. A plain string is still accepted, as a general note shown last.",
+      "items": {
+        "anyOf": [
+          {
+            "type": "string",
+            "minLength": 3
+          },
+          {
+            "$ref": "#/$defs/change"
+          }
+        ]
+      }
+    },
+    "history": {
+      "type": "array",
+      "description": "Change notes from earlier versions, kept so the page can show how the brief got here. On a refresh the current changes move in here as one block, stamped with the brief's updated stamp from before the refresh, and are never overwritten. Order does not matter; the page shows the newest first.",
+      "items": {
+        "$ref": "#/$defs/version"
+      }
+    },
+    "background": {
+      "type": "string",
+      "description": "Earlier history the reader may want but does not need to act: what happened on previous days, how the brief came about. Folded away under 'Background' so it never competes with what changed."
+    },
+    "decisions": {
+      "type": "array",
+      "minItems": 1,
+      "description": "The brief proper. One entry per root cause, not per finding.",
+      "items": {
+        "$ref": "#/$defs/entry"
+      }
+    },
+    "mechanical": {
+      "type": "array",
+      "description": "Unambiguous fixes already applied. Listed so the reader knows they were handled, never asked about.",
+      "items": {
+        "$ref": "#/$defs/mechanicalItem"
+      }
+    },
+    "outstanding": {
+      "type": "array",
+      "description": "Agreed work not yet done. Kept apart from the decisions.",
+      "items": {
+        "$ref": "#/$defs/outstandingItem"
+      }
+    },
+    "rulings": {
+      "type": "array",
+      "description": "Everything the operator has answered, ruled or judged that outlives a single entry: an answer given in chat, a preference, a scope cut, a 'we do not care about X'. The brief's memory. A long session is summarised and loses what was said in it; this list is not. Search it before raising anything. Never deleted — a ruling that no longer holds is marked replaced.",
+      "items": {
+        "$ref": "#/$defs/ruling"
+      }
+    },
+    "diagramTheme": {
+      "type": "string",
+      "enum": [
+        "auto",
+        "light",
+        "dark"
+      ],
+      "default": "auto",
+      "description": "Theme passed to embedded archify pages. 'auto' follows the reader's theme."
+    }
+  },
+  "$defs": {
+    "entry": {
+      "type": "object",
+      "required": [
+        "id",
+        "created",
+        "updated",
+        "title",
+        "problem",
+        "brief",
+        "evidence",
+        "solutions"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^Q-[0-9]+$",
+          "description": "Stable citation handle. Q-1, Q-2, … Never renumber an existing entry."
+        },
+        "created": {
+          "$ref": "#/$defs/timestamp",
+          "description": "When this entry was first written. Set once and never changed."
+        },
+        "updated": {
+          "$ref": "#/$defs/timestamp",
+          "description": "When this entry last changed in any way — wording, evidence, status, ruling, resolution. Move it with every change, and only then."
+        },
+        "title": {
+          "type": "string",
+          "minLength": 5,
+          "maxLength": 90,
+          "description": "The problem as a headline, in plain English. No identifiers standing alone."
+        },
+        "short": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 40,
+          "description": "A label of two to five words for this entry, e.g. 'one-call page read'. Wherever the entry's id is cited on the page, it is shown as 'Q-29 (one-call page read)' so the reader never has to remember what a bare id means."
+        },
+        "problem": {
+          "type": "string",
+          "minLength": 20,
+          "maxLength": 400,
+          "description": "Part a. One or two sentences naming what is wrong. No preamble, no background."
+        },
+        "brief": {
+          "type": "string",
+          "minLength": 40,
+          "description": "Part b. Two to eight sentences on why that matters, in the reader's terms."
+        },
+        "evidence": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 4,
+          "description": "Part c. Verified evidence grounded in real things: code lines, documents, prior findings.",
+          "items": {
+            "$ref": "#/$defs/evidence"
+          }
+        },
+        "unwound": {
+          "$ref": "#/$defs/unwound",
+          "description": "Part d. How it works today and why that is wrong — or the target state where there is no defect."
+        },
+        "solutions": {
+          "type": "array",
+          "minItems": 1,
+          "description": "Part e. The first is the recommendation and must carry recommended: true.",
+          "items": {
+            "$ref": "#/$defs/solution"
+          }
+        },
+        "rolledUp": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "The individual findings this entry absorbed, each named in plain English with its identifier trailing."
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Claims not yet proven, stated outright, each saying what would settle it."
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "open",
+            "decided",
+            "complete",
+            "superseded"
+          ],
+          "default": "open",
+          "description": "open — needs your ruling. decided — you chose a way forward, it has not been carried out yet. complete — the chosen way forward has been carried out and the entry is closed; that covers work landing, a question being answered, or scope being cut, whichever the chosen option was. superseded — the problem went away or was overtaken, and nothing was carried out. An entry answered once is never raised again under a new id: if new evidence reopens it, set the same entry back to open and say what is new."
+        },
+        "bearing": {
+          "type": "string",
+          "enum": [
+            "blocks-goal",
+            "escalated"
+          ],
+          "description": "How this entry bears on the brief's goal. blocks-goal: the goal cannot be reached until it is ruled on or carried out. escalated: a real decision for the operator that does not stand in the goal's way, so it stays visible but never reads as a blocker. Required while the entry is open or decided; re-judge it whenever the goal changes."
+        },
+        "bearingReason": {
+          "type": "string",
+          "minLength": 5,
+          "description": "One line saying why the entry is, or is not, on the goal's path. Required with bearing."
+        },
+        "blockedBy": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^Q-[0-9]+$"
+          },
+          "description": "Entries that must be ruled before this one can be: its options depend on how those are settled. The page shows, on each of those, which entries its ruling unblocks, and ranks what waits on the reader by how much each ruling unblocks."
+        },
+        "decision": {
+          "type": "object",
+          "required": [
+            "chose",
+            "date"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "chose": {
+              "type": "string",
+              "description": "The id of the chosen solution."
+            },
+            "date": {
+              "type": "string",
+              "format": "date"
+            },
+            "note": {
+              "type": "string",
+              "description": "The reasoning, in the operator's words where they gave it."
+            }
+          },
+          "description": "Which option was chosen and why. Set when the ruling is made, and kept afterwards."
+        },
+        "resolution": {
+          "type": "object",
+          "description": "What actually happened. Required once status is complete — a closed entry without proof is a claim, not a record.",
+          "required": [
+            "date"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "date": {
+              "type": "string",
+              "format": "date",
+              "description": "The day it was carried out."
+            },
+            "note": {
+              "type": "string",
+              "description": "What was done, in one or two sentences. Say it in the same plain terms as the problem."
+            },
+            "evidence": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/evidence"
+              },
+              "description": "Proof it happened: the commit, the pull request, the test that now covers it, the ruling that cut the scope."
+            },
+            "differs": {
+              "type": "string",
+              "description": "Retired in favour of amendments. Still accepted, shown as one amendment, with a warning."
+            },
+            "amendments": {
+              "type": "array",
+              "minItems": 1,
+              "description": "Where the implementer drifted from the recorded ruling by their own decision, one item per drift, each saying what was ruled, what was done instead and why. Its presence makes the entry 'complete, with amendments', which the page marks on the entry and in the summary. Never edit the ruling itself to match what landed.",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "done",
+                  "why"
+                ],
+                "properties": {
+                  "ruled": {
+                    "type": "string",
+                    "minLength": 3,
+                    "description": "What the recorded ruling said, on this point. Optional when the option's own wording already says it."
+                  },
+                  "done": {
+                    "type": "string",
+                    "minLength": 3,
+                    "description": "What was carried out instead."
+                  },
+                  "why": {
+                    "type": "string",
+                    "minLength": 3,
+                    "description": "Why the implementer drifted: what they found that the ruling did not anticipate."
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "decided"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "required": [
+              "decision"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "complete"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "required": [
+              "resolution"
+            ]
+          }
+        }
+      ]
+    },
+    "version": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "changes"
+      ],
+      "description": "The change notes of one earlier version of the brief.",
+      "properties": {
+        "version": {
+          "$ref": "#/$defs/timestamp",
+          "description": "The brief's updated stamp when these notes were current. Unique across history, and earlier than the brief's own updated stamp."
+        },
+        "changes": {
+          "type": "array",
+          "minItems": 1,
+          "description": "That version's changes, exactly as they stood.",
+          "items": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 3
+              },
+              {
+                "$ref": "#/$defs/change"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "change": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "text"
+      ],
+      "description": "One change since the last version.",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "raised",
+            "changed",
+            "completed",
+            "retracted",
+            "note"
+          ],
+          "description": "raised — a new entry or new outstanding work. changed — an entry moved state without closing (open → decided), or its ruling or content changed in a way that matters to the reader. completed — an entry or piece of work was carried out. retracted — an entry went away or was overtaken. note — about the brief as a whole rather than one entry; shown last."
+        },
+        "text": {
+          "type": "string",
+          "minLength": 3,
+          "description": "One plain line: the id with what moved, e.g. 'Q-2: open → decided, name the fifth failure'."
+        },
+        "id": {
+          "type": "string",
+          "pattern": "^Q-\\d+$",
+          "description": "The entry this change is about, when the text does not start with it. A raised change leads the change list, grouped by that entry's bearing on the goal; without an id the first entry id in the text is used."
+        }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "required": [
+        "kind",
+        "ref"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "code",
+            "document",
+            "finding",
+            "run",
+            "commit",
+            "test",
+            "measurement",
+            "ruling"
+          ],
+          "description": "What sort of thing is being cited."
+        },
+        "ref": {
+          "type": "string",
+          "description": "The citation itself: path:line, a spec path, a commit hash, a run identifier. For kind=ruling, the ruling's id, e.g. R-3."
+        },
+        "note": {
+          "type": "string",
+          "description": "What this citation shows, in one sentence. Required in practice — a bare path proves nothing."
+        },
+        "url": {
+          "type": "string",
+          "description": "Optional link, where one exists and the reader can open it."
+        },
+        "verified": {
+          "type": "boolean",
+          "default": true,
+          "description": "False marks the claim as unproven on the page. Say in the note what would settle it."
+        }
+      }
+    },
+    "unwound": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "now": {
+          "type": "string",
+          "description": "How the thing actually behaves today."
+        },
+        "whyWrong": {
+          "type": "string",
+          "description": "Why that behaviour is a problem. Use where there is a defect."
+        },
+        "target": {
+          "type": "string",
+          "description": "The state we want instead. Use where there is no defect, only a gap."
+        },
+        "diagrams": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/diagram"
+          }
+        }
+      },
+      "anyOf": [
+        {
+          "required": [
+            "now"
+          ]
+        },
+        {
+          "required": [
+            "target"
+          ]
+        }
+      ]
+    },
+    "diagram": {
+      "type": "object",
+      "required": [
+        "kind",
+        "caption"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "mermaid",
+            "archify",
+            "svg"
+          ],
+          "description": "mermaid renders natively in the page. archify embeds a rendered archify page. svg inlines a self-contained file."
+        },
+        "caption": {
+          "type": "string",
+          "description": "What the reader should take from the picture. Not a title — a claim."
+        },
+        "source": {
+          "type": "string",
+          "description": "kind=mermaid: the diagram text itself."
+        },
+        "file": {
+          "type": "string",
+          "description": "kind=archify: published path of the rendered archify page, e.g. diagrams/q1-flow.html. kind=svg: local path of the .svg file to inline."
+        },
+        "spec": {
+          "type": "string",
+          "description": "kind=archify: path of the archify JSON this page was rendered from. Keep it so the picture can be edited rather than redrawn."
+        },
+        "archifyType": {
+          "type": "string",
+          "enum": [
+            "architecture",
+            "workflow",
+            "sequence",
+            "dataflow",
+            "lifecycle"
+          ],
+          "description": "kind=archify: which archify renderer produced the page."
+        },
+        "embed": {
+          "type": "string",
+          "enum": [
+            "inline",
+            "file"
+          ],
+          "default": "inline",
+          "description": "kind=archify: how the drawing is carried. 'inline' (the default) puts the whole drawing inside the page, so the page stands alone and needs nothing published alongside it. 'file' references it as a companion file, which keeps the page small but only works where the publishing tool can carry companion files — pass the companion paths the renderer prints. Prefer inline unless the page is getting large."
+        },
+        "height": {
+          "type": "integer",
+          "minimum": 200,
+          "maximum": 1400,
+          "default": 520,
+          "description": "kind=archify: force a fixed frame height in pixels. Leave it out — the renderer works the height out from the drawing's own proportions, which is what stops it being cropped."
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "mermaid"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "required": [
+              "source"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "enum": [
+                  "archify",
+                  "svg"
+                ]
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "required": [
+              "file"
+            ]
+          }
+        }
+      ]
+    },
+    "solution": {
+      "type": "object",
+      "required": [
+        "id",
+        "label",
+        "summary",
+        "cost"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]+$",
+          "description": "Short handle, unique within the entry."
+        },
+        "label": {
+          "type": "string",
+          "maxLength": 90,
+          "description": "The option as a headline."
+        },
+        "recommended": {
+          "type": "boolean",
+          "default": false
+        },
+        "reversible": {
+          "type": "boolean",
+          "description": "Whether carrying this option out can be undone at a cost comparable to doing it. false when it cannot, or undoing costs far more: data deleted or rewritten, a migration run on real data, a message or release sent to people, a public interface published, money spent, a third party told. Say so in cost.forecloses. Leave it out only when the option clearly changes nothing that is hard to take back. An irreversible option is never carried out without the operator's ruling."
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 20,
+          "description": "What doing this actually means."
+        },
+        "cost": {
+          "type": "object",
+          "required": [
+            "work"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "work": {
+              "type": "string",
+              "description": "What doing it consists of: what gets changed, how much of it, and what it needs from the operator — a review, a decision, a migration window, access. Do not estimate calendar time at the pace of hand-written code: the work is done by agents several times faster, and a 'two days' figure misleads the reader about the real cost, which is usually their attention and the risk."
+            },
+            "risk": {
+              "type": "string",
+              "description": "What could go wrong if we pick this."
+            },
+            "forecloses": {
+              "type": "string",
+              "description": "What this rules out later."
+            }
+          }
+        },
+        "steps": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Optional ordered steps, where the option is not self-evident."
+        }
+      }
+    },
+    "mechanicalItem": {
+      "type": "object",
+      "required": [
+        "summary",
+        "created",
+        "updated"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "summary": {
+          "type": "string",
+          "description": "What was wrong and what was done, in one sentence."
+        },
+        "created": {
+          "$ref": "#/$defs/timestamp",
+          "description": "When this item was first written. Set once and never changed."
+        },
+        "updated": {
+          "$ref": "#/$defs/timestamp",
+          "description": "When this item last changed in any way — wording, evidence, status, ruling, resolution. Move it with every change, and only then."
+        },
+        "detail": {
+          "type": "string"
+        },
+        "reversible": {
+          "type": "boolean",
+          "default": true,
+          "description": "Handled without asking means it can be undone. Anything that cannot be (data rewritten, something sent, something published) is never handled without asking — it is an entry awaiting a ruling. false here is refused."
+        },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/evidence"
+          }
+        },
+        "rolledUp": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "outstandingItem": {
+      "type": "object",
+      "required": [
+        "summary",
+        "created",
+        "updated"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "summary": {
+          "type": "string",
+          "description": "The work, named so the reader knows what it delivers."
+        },
+        "created": {
+          "$ref": "#/$defs/timestamp",
+          "description": "When this item was first written. Set once and never changed."
+        },
+        "updated": {
+          "$ref": "#/$defs/timestamp",
+          "description": "When this item last changed in any way — wording, evidence, status, ruling, resolution. Move it with every change, and only then."
+        },
+        "detail": {
+          "type": "string"
+        },
+        "blockedBy": {
+          "type": "string",
+          "description": "The entry id this waits on, where it waits on a ruling. e.g. Q-2. Once that entry is ruled, the item is no longer blocked — change its state."
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "not-started",
+            "in-progress",
+            "blocked",
+            "done"
+          ],
+          "default": "not-started",
+          "description": "Where the work stands. 'blocked' only while blockedBy names an entry still awaiting a ruling. 'done' once it has been carried out — the item stays on the page, it is not deleted."
+        }
+      }
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "A moment with its time zone: YYYY-MM-DDTHH:MM, optional seconds, then Z or an offset. e.g. 2026-09-15T09:40Z or 2026-09-15T10:40+01:00."
+    },
+    "ruling": {
+      "type": "object",
+      "required": [
+        "id",
+        "created",
+        "updated",
+        "about",
+        "said",
+        "source"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^R-[0-9]+$",
+          "description": "Stable citation handle. R-1, R-2, … Never renumber, never reuse."
+        },
+        "created": {
+          "$ref": "#/$defs/timestamp",
+          "description": "When the ruling was given. Set once and never changed."
+        },
+        "updated": {
+          "$ref": "#/$defs/timestamp",
+          "description": "When this record last changed — reworded, linked to another entry, or replaced."
+        },
+        "about": {
+          "type": "string",
+          "minLength": 10,
+          "description": "The question it answers, phrased the way it would be asked again. This is what a later session matches a new question against, so name the subject plainly."
+        },
+        "said": {
+          "type": "string",
+          "minLength": 10,
+          "description": "The answer or judgement itself, in the operator's own words where they gave them."
+        },
+        "source": {
+          "type": "string",
+          "minLength": 3,
+          "description": "Where it was given, so it can be traced: 'chat, 2026-09-25', 'comment on Q-4', 'AskUserQuestion round, 2026-09-25', a commit or a document."
+        },
+        "entries": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^Q-[0-9]+$"
+          },
+          "description": "The entries this ruling bears on, where there are any."
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "active",
+            "replaced"
+          ],
+          "default": "active",
+          "description": "active — still holds. replaced — the operator later said otherwise; kept for the record, with replacedBy naming the ruling that took over."
+        },
+        "replacedBy": {
+          "type": "string",
+          "pattern": "^R-[0-9]+$",
+          "description": "The ruling that took over from this one. Required once status is replaced."
+        },
+        "memory": {
+          "type": "string",
+          "description": "The Claude memory file this ruling was also saved to, when it is about how to work in general (a preference, a standing instruction) rather than about this brief's subject. e.g. feedback-fix-wording-without-asking.md."
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "replaced"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "required": [
+              "replacedBy"
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

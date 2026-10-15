@@ -29,9 +29,9 @@ Global skills only. Project-bound skills (the `prj-*` set, speckit-*) live in th
 | Skill | Uses | Source | How it got here |
 |---|---|---|---|
 | archify | | github `tt-a1i/archify` | `npx skills` install into `~/.agents/skills`, symlinked; pinned in `~/.agents/.skill-lock.json` |
-| chorus-core, chorus-learn, chorus-review, chorus-sdlc | 56 / 38 (review / sdlc) | github `zaytsevand/chorus` | vendored copy, synced 2026-09-28 at `2aaf8eb` |
-| coryphaeus | | local `~/code/zaytsevand/coryphaeus` | own repo, no remote yet; copied by hand |
-| problem-brief | | github `zaytsevand/problem-brief` | own repo, copied into skills |
+| chorus-core, chorus-learn, chorus-review, chorus-sdlc | 56 / 38 (review / sdlc) | github `zaytsevand/chorus` | vendored in `claude/skills/` (pins in `VENDORED.md`) |
+| coryphaeus | | github `zaytsevand/coryphaeus` (private) | vendored in `claude/skills/` |
+| problem-brief | | github `zaytsevand/problem-brief` | vendored in `claude/skills/` |
 | gh-stack | | github `github/gh-stack` | skill shipped with the `gh stack` CLI extension (v0.1.1) |
 | graphify | | PyPI `graphifyy` 0.8.36 | `uv tool install graphifyy`, then its own installer wrote the skill |
 | goal-loop | 36 (`/goal`) | none recorded | hand-written, local only |
