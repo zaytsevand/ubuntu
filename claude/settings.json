@@ -4,8 +4,6 @@
       "Read(//$HOME/**)",
       "Read(//tmp/**)",
       "Bash(*)",
-      "mcp__atlassian__*",
-      "mcp__gitlab__*",
       "WebSearch"
     ],
     "additionalDirectories": [

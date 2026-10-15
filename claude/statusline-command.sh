@@ -45,44 +45,52 @@ fmt_remaining() {
 
 now=$(date +%s)
 
+# Colors: green < 50%, yellow < 80%, red otherwise
+R=$'\033[0m'; B=$'\033[1m'; DIM=$'\033[2m'; CYAN=$'\033[36m'; MAG=$'\033[35m'; BLUE=$'\033[34m'
+pct_color() {
+  local p=${1%.*}
+  if [ "${p:-0}" -ge 80 ]; then printf '\033[31m'; elif [ "${p:-0}" -ge 50 ]; then printf '\033[33m'; else printf '\033[32m'; fi
+}
+
 # Build output
 parts=()
 
 # Context — usage % + token count
 if [ -n "$used" ] && [ -n "$used_tokens" ]; then
   tok_k=$(echo "$used_tokens" | awk '{printf "%.0fk", $1/1000}')
-  parts+=("$(printf '\033[1mctx:\033[0m %.0f%% (%s)' "$used" "$tok_k")")
+  parts+=("$(printf '%sctx:%s %s%.0f%%%s %s(%s)%s' "$B" "$R" "$(pct_color "$used")" "$used" "$R" "$DIM" "$tok_k" "$R")")
 elif [ -n "$used" ]; then
-  parts+=("$(printf '\033[1mctx:\033[0m %.0f%%' "$used")")
+  parts+=("$(printf '%sctx:%s %s%.0f%%%s' "$B" "$R" "$(pct_color "$used")" "$used" "$R")")
 fi
 
 # Model
-[ -n "$model" ] && parts+=("$model")
+[ -n "$model" ] && parts+=("${MAG}${model}${R}")
 
 # Directory + branch
 if [ -n "$branch" ]; then
-  parts+=("$cwd_base ($branch)")
+  parts+=("${CYAN}${cwd_base}${R} ${BLUE}(${branch})${R}")
 elif [ -n "$cwd_base" ]; then
-  parts+=("$cwd_base")
+  parts+=("${CYAN}${cwd_base}${R}")
 fi
 
 # Rate limits — show actual remaining time until reset, not the static window name
 rate_parts=()
 if [ -n "$five_pct" ]; then
   if [ -n "$five_reset" ]; then
-    rate_parts+=("$(printf '%s:%.0f%%' "$(fmt_remaining $((five_reset - now)))" "$five_pct")")
+    rate_parts+=("$(printf '%s%s:%s%s%.0f%%%s' "$DIM" "$(fmt_remaining $((five_reset - now)))" "$R" "$(pct_color "$five_pct")" "$five_pct" "$R")")
   else
-    rate_parts+=("$(printf '5h:%.0f%%' "$five_pct")")
+    rate_parts+=("$(printf '%s5h:%s%s%.0f%%%s' "$DIM" "$R" "$(pct_color "$five_pct")" "$five_pct" "$R")")
   fi
 fi
 if [ -n "$week_pct" ]; then
   if [ -n "$week_reset" ]; then
-    rate_parts+=("$(printf '%s:%.0f%%' "$(fmt_remaining $((week_reset - now)))" "$week_pct")")
+    rate_parts+=("$(printf '%s%s:%s%s%.0f%%%s' "$DIM" "$(fmt_remaining $((week_reset - now)))" "$R" "$(pct_color "$week_pct")" "$week_pct" "$R")")
   else
-    rate_parts+=("$(printf '7d:%.0f%%' "$week_pct")")
+    rate_parts+=("$(printf '%s7d:%s%s%.0f%%%s' "$DIM" "$R" "$(pct_color "$week_pct")" "$week_pct" "$R")")
   fi
 fi
 [ ${#rate_parts[@]} -gt 0 ] && parts+=("${rate_parts[*]}")
 
 # Join with separator
-printf '%s' "$(IFS=' | '; echo "${parts[*]}")"
+out=$(printf "${DIM} | ${R}%s" "${parts[@]}")
+printf '%s' "${out#"${DIM} | ${R}"}"

@@ -63,11 +63,7 @@ Also provided by plugins: context-mode, github. claude.ai connectors (Gmail, Dri
 ## Other
 
 - Output style: `expanded-prose` (`~/.claude/output-styles/`)
-- Status line: `statusline-command.sh` (copied here; wired by `statusLine` in `claude/settings.json`). Shows `ctx: N% (Nk) | model | dir (branch) | reset-time:pct`; needs `jq`
+- Status line: `statusline-command.sh` (copied here; wired by `statusLine` in `claude/settings.json`). Shows `ctx: N% (Nk) | model | dir (branch) | reset-time:pct`; needs `jq`; colored (context and rate-limit % turn green → yellow → red at 50% / 80%)
 - Global rules: `CLAUDE.md`, `RTK.md` (rtk 1.0.1 token proxy, hook-rewritten commands)
 - Hooks and permissions live in `~/.claude/settings.json` (not copied here: machine-specific paths)
 
-## Stale in this repo
-
-`claude/settings.json` still allows `mcp__atlassian__*` and `mcp__gitlab__*`, and `claude/CLAUDE.md` is the old GitLab/Jira
-workflow; neither matches the setup above.
