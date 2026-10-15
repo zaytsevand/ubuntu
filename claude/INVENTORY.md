@@ -5,22 +5,22 @@ Usage = slash-command invocations found in `~/.claude/history.jsonl`.
 
 ## Plugins (`enabledPlugins`)
 
-| Plugin | Marketplace | Version | State | Notes |
-|---|---|---|---|---|
-| context-mode | context-mode | 1.0.146 | on | `ctx_*` tools keep big output out of context |
-| pyright-lsp | claude-plugins-official | 1.0.0 | on | Python symbol lookups |
-| superpowers | claude-plugins-official | 6.4.1 | on | used: systematic-debugging (37), receiving-code-review (24), brainstorming (16) |
-| memsearch | memsearch-plugins | 0.4.1 | on | past-session recall |
-| github | claude-plugins-official | user | on | GitHub MCP tools |
-| ast-index | ast-index-marketplace | 3.47.2 | on | structural code search |
-| modularity | vladikk-modularity | 1.5.0 | on | balanced-coupling reviews |
-| humanizer | humanizer | 2.8.2 | on | |
-| ponytail | ponytail | 5.2.0 | on | |
-| context7 | claude-plugins-official | | off | |
-| caveman | caveman | | off | |
-| frontend-design | claude-plugins-official | | project scope only | |
+| Plugin | Marketplace | Source (GitHub) | Version | State | Notes |
+|---|---|---|---|---|---|
+| context-mode | context-mode | `mksglu/context-mode` | 1.0.146 | on | `ctx_*` tools keep big output out of context |
+| pyright-lsp | claude-plugins-official | `anthropics/claude-plugins-official` | 1.0.0 | on | Python symbol lookups |
+| superpowers | claude-plugins-official | `anthropics/claude-plugins-official` | 6.4.1 | on | used: systematic-debugging (37), receiving-code-review (24), brainstorming (16) |
+| memsearch | memsearch-plugins | `zilliztech/memsearch` | 0.4.1 | on | past-session recall |
+| github | claude-plugins-official | `anthropics/claude-plugins-official` | user | on | GitHub MCP tools |
+| ast-index | ast-index-marketplace | `defendend/Claude-ast-index-search` | 3.47.2 | on | structural code search |
+| modularity | vladikk-modularity | `vladikk/modularity` | 1.5.0 | on | balanced-coupling reviews |
+| humanizer | humanizer | `blader/humanizer` | 2.8.2 | on |  |
+| ponytail | ponytail | `DietrichGebert/ponytail` | 5.2.0 | on |  |
+| context7 | claude-plugins-official | `anthropics/claude-plugins-official` |  | off |  |
+| caveman | caveman | `JuliusBrussee/caveman` |  | off |  |
+| frontend-design | claude-plugins-official | `anthropics/claude-plugins-official` |  | project scope only |  |
 
-Marketplaces: context-mode, memsearch-plugins, ast-index-marketplace, vladikk-modularity, humanizer, caveman, ponytail (+ claude-plugins-official).
+Install: `/plugin marketplace add <Source>` then `/plugin install <Plugin>@<Marketplace>`.
 
 ## User skills (`~/.claude/skills`)
 
