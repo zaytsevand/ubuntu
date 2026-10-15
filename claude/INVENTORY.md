@@ -33,9 +33,6 @@ Global skills only. Project-bound skills (the `prj-*` set, speckit-*) live in th
 | problem-brief | | github `zaytsevand/problem-brief` | vendored in `claude/skills/` |
 | gh-stack | | github `github/gh-stack` | skill shipped with the `gh stack` CLI extension (v0.1.1) |
 | graphify | | PyPI `graphifyy` 0.8.36 | `uv tool install graphifyy`, then its own installer wrote the skill |
-| goal-loop | 36 (`/goal`) | none recorded | hand-written, local only |
-| spec-walkthrough | 30 | none recorded | hand-written, local only |
-| open-vscode | 26 | none recorded | hand-written, local only |
 
 The two `synced/` folders in that directory are account-synced skills, not local installs.
 
