@@ -20,12 +20,7 @@ if [ ! -d "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting" ]; then
 fi
 
 if [ ! -d "$ZSH_CUSTOM/plugins/autoswitch_virtualenv" ]; then
-  git clone https://github.com/MichaelAqworWorker/zsh-autoswitch-virtualenv.git "$ZSH_CUSTOM/plugins/autoswitch_virtualenv"
-fi
-
-echo "==> Installing jenv"
-if [ ! -d "$HOME/.jenv" ]; then
-  git clone https://github.com/jenv/jenv.git "$HOME/.jenv"
+  git clone https://github.com/MichaelAquilina/zsh-autoswitch-virtualenv.git "$ZSH_CUSTOM/plugins/autoswitch_virtualenv"
 fi
 
 echo "==> Installing nvm"
@@ -40,10 +35,10 @@ pipx install poetry 2>/dev/null || true
 pipx install virtualenv 2>/dev/null || true
 
 echo "==> Backing up existing .zshrc"
-[ -f "$HOME/.zshrc" ] && cp "$HOME/.zshrc" "$HOME/.zshrc.bak"
+if [ -f "$HOME/.zshrc" ]; then cp "$HOME/.zshrc" "$HOME/.zshrc.bak"; fi
 
 echo "==> Deploying .zshrc from repo"
-cp "$SCRIPT_DIR/shell/.zshrc" "$HOME/.zshrc"
+cp "$SCRIPT_DIR/shell/.zshrc" "$SCRIPT_DIR/shell/.zprofile" "$HOME/"
 
 echo "==> Setting zsh as default shell"
 chsh -s "$(which zsh)" || echo "Could not change shell — run: chsh -s \$(which zsh)"

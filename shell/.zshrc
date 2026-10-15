@@ -75,7 +75,7 @@ ZSH_THEME="robbyrussell"
 plugins=(
 		git fzf pip sudo zsh-interactive-cd
 		docker docker-compose z zsh-syntax-highlighting
-		jenv
+		autoswitch_virtualenv
 		direnv
 		nvm
 	)
@@ -145,8 +145,6 @@ export PROMPT="$prompt_str$ "
 
 export DIRENV_LOG_FORMAT=
 
-export JAVA_HOME="$HOME/.jdks/ms-21.0.9"
-export PATH="$JAVA_HOME/bin:$PATH"
 
 
 # Created by `pipx` on 2026-02-27 10:49:34
