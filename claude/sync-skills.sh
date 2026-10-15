@@ -17,12 +17,12 @@ rm -rf "$DST"; mkdir -p "$DST"
 } > "$HERE/VENDORED.md"
 
 pin=$(clone chorus)
-for s in chorus-core chorus-learn chorus-review chorus-sdlc; do
+for s in chorus-core chorus-learn chorus-review chorus-sdlc coryphaeus; do
   cp -R "$WORK/chorus/skill/$s" "$DST/$s"; echo "| $s | zaytsevand/chorus | \`$pin\` |" >> "$HERE/VENDORED.md"
 done
 
-# Standalone skills: the skill is the repo root, minus repo-only files.
-for spec in "coryphaeus:SKILL.md README.md LICENSE schema bin examples" "problem-brief:SKILL.md reference bin schema examples plugin"; do
+# Standalone skill: the skill is the repo root, minus repo-only files. coryphaeus ships inside chorus.
+for spec in "problem-brief:SKILL.md reference bin schema examples plugin"; do
   name=${spec%%:*}; items=${spec#*:}; pin=$(clone "$name"); mkdir -p "$DST/$name"
   for i in $items; do [ -e "$WORK/$name/$i" ] && cp -R "$WORK/$name/$i" "$DST/$name/"; done
   echo "| $name | zaytsevand/$name | \`$pin\` |" >> "$HERE/VENDORED.md"
