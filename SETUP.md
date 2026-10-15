@@ -13,6 +13,7 @@
 ### claude/
 - `CLAUDE.md` — global Claude Code rules (GitLab workflow, MR review approach)
 - `settings.json` — permissions and MCP tools
+- `INVENTORY.md` — installed plugins, skills, subagents, mods and MCP servers (with usage counts)
 
 ### config/glab-cli/
 - `config.yml` — glab CLI config (add your GitLab host and token)
