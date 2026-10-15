@@ -12,5 +12,9 @@
       "/tmp"
     ]
   },
-  "effortLevel": "medium"
+  "effortLevel": "medium",
+  "statusLine": {
+    "type": "command",
+    "command": "bash ~/.claude/statusline-command.sh"
+  }
 }

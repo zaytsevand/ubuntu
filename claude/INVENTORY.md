@@ -63,7 +63,7 @@ Also provided by plugins: context-mode, github. claude.ai connectors (Gmail, Dri
 ## Other
 
 - Output style: `expanded-prose` (`~/.claude/output-styles/`)
-- Status line: `~/.claude/statusline-command.sh`
+- Status line: `statusline-command.sh` (copied here; wired by `statusLine` in `claude/settings.json`). Shows `ctx: N% (Nk) | model | dir (branch) | reset-time:pct`; needs `jq`
 - Global rules: `CLAUDE.md`, `RTK.md` (rtk 1.0.1 token proxy, hook-rewritten commands)
 - Hooks and permissions live in `~/.claude/settings.json` (not copied here: machine-specific paths)
 
